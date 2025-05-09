@@ -1,160 +1,106 @@
 
-# 🗂️ Task Management API
+# Task Management API
 
-A Laravel 10 RESTful API for managing tasks, built with clean architecture principles:  
-- 🔐 Sanctum Authentication  
-- 🧠 Service-Repository Pattern  
-- 📦 Resource Collections  
-- 👥 Task Assignment (Many-to-Many)  
-- 📄 Filtering, Sorting, Pagination  
-- ✅ Feature & Unit Tests  
+A clean and structured Laravel 10 RESTful API for managing tasks with authentication and task assignment.
 
----
+## Features
 
-## 🚀 Installation
+- Laravel 10.0 with PHP 8.2.18
+- Sanctum-based authentication (register, login, logout)
+- Task CRUD operations
+- Task assignment (admin can assign tasks to users)
+- Filtering, sorting, and pagination of tasks
+- Service-Repository pattern for business logic separation
+- Resource collections for API responses
+- Feature and unit tests
 
-```bash
-git clone https://github.com/your-username/task-manager.git
-cd task-manager
+## Requirements
+
+- PHP 8.2+
+- Composer
+- MySQL or other supported DB
+
+## Installation
+
+Clone the repository and install dependencies:
+
+```
 composer install
 cp .env.example .env
 php artisan key:generate
-```
-
-Set up your `.env` with database credentials, then:
-
-```bash
 php artisan migrate
+php artisan db:seed
 ```
 
----
+## Authentication
 
-## ⚙️ Requirements
+Sanctum is used for token-based authentication.
 
-- PHP 8.1+
-- Laravel 10.x
-- Composer
-- MySQL or other DB
+### Auth Endpoints
 
----
+- POST /api/register
+- POST /api/login
+- POST /api/logout (requires auth)
 
-## 🔐 Authentication (Sanctum)
+## Task Endpoints
 
-Install Sanctum:
+- GET /api/tasks
+- POST /api/tasks
+- GET /api/tasks/{id}
+- PUT /api/tasks/{id}
+- DELETE /api/tasks/{id}
+- POST /api/tasks/{id}/assign (admin only)
 
-```bash
-composer require laravel/sanctum:^3.2
-php artisan vendor:publish --provider="Laravel\Sanctum\SanctumServiceProvider"
-php artisan migrate
-```
+### Task Assignment Rules
 
-Update `app/Http/Kernel.php` for API middleware group:
+- Task can be created by any user
+- Only users with the role `admin` can assign tasks
 
-```php
-\Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
-```
+## Database Seeding
 
----
+A default seeder adds:
 
-## 📌 Features
+- One admin user (admin@example.com, password: admin)
+- Two regular users (ragib@example.com, password: ragib, hasnat@example.com, password: hasnat)
 
-### ✅ Auth Endpoints
+## Testing
 
-| Method | Endpoint     | Description        |
-|--------|--------------|--------------------|
-| POST   | `/register`  | Register a user    |
-| POST   | `/login`     | Login user         |
-| POST   | `/logout`    | Logout (token)     |
+Feature and unit tests are written using Laravel's testing tools.
 
-### ✅ Task CRUD (Protected)
-
-| Method | Endpoint        | Description         |
-|--------|------------------|---------------------|
-| GET    | `/tasks`         | List tasks          |
-| POST   | `/tasks`         | Create a task       |
-| GET    | `/tasks/{id}`    | Show task details   |
-| PUT    | `/tasks/{id}`    | Update a task       |
-| DELETE | `/tasks/{id}`    | Delete a task       |
-
-### ✅ Task Assignment
-
-| Method | Endpoint                | Description                   |
-|--------|--------------------------|-------------------------------|
-| POST   | `/tasks/{id}/assign`     | Assign user to task           |
-
-### ✅ Filtering & Sorting
-
-Supports:
-- Filter by `status`, `priority`, `due_date`
-- Sort by `due_date`, `created_at` using `?sort=-due_date`
-- Pagination: 10 per page
-
-Example:
-```
-/tasks?status=Done&priority=High&sort=-due_date
-```
-
----
-
-## 🧠 Project Architecture
-
-### 🧱 Service-Repository Pattern
-
-- **Services** handle business logic.
-- **Repositories** handle DB queries.
-- **Resources/Collections** shape API output.
-
-### 📁 Directory Layout
+Run all tests:
 
 ```
-app/
-├── Http/Controllers/TaskController.php
-├── Http/Resources/TaskResource.php
-├── Models/Task.php
-├── Repositories/
-│   ├── Interfaces/TaskRepositoryInterface.php
-│   └── TaskRepository.php
-├── Services/TaskService.php
-```
-
----
-
-## ✅ Example Task JSON
-
-```json
-{
-  "id": 1,
-  "title": "Finish Laravel API",
-  "description": "Service & Repository structure",
-  "due_date": "2025-05-10",
-  "status": "In Progress",
-  "priority": "High"
-}
-```
-
----
-
-## 🧪 Testing
-
-Coming soon:
-
-```bash
 php artisan test
 ```
 
 Includes:
-- Feature tests for all endpoints
-- Unit tests for services and logic
 
----
+- Feature tests for API endpoints
+- Unit tests for task assignment logic
 
-## 📚 License
+## Architecture
 
-MIT — feel free to use and adapt!
+This project follows the Service-Repository pattern:
 
----
+- Repositories handle all DB queries
+- Services handle business logic
+- Resource Collections format API responses
 
-## 🧑‍💻 Author
+Example structure:
 
-Built by [Your Name]  
-Feel free to fork, improve, and contribute!
+```
+app/
+├── Http/Controllers
+├── Http/Requests
+├── Http/Resources
+├── Models
+├── Repositories
+│   └── Interfaces
+├── Services
+```
+
+## Notes
+
+- Role management is handled with a `role` column in the `users` table (no separate roles table)
+- `user_id` is automatically assigned as task creator during creation
+- Middleware protects all task routes via Sanctum
