@@ -9,7 +9,6 @@ class TaskRepository implements TaskRepositoryInterface
 {
     public function all($filters)
     {
-        // Filtering & sorting logic
         $query = Task::query();
 
         if (isset($filters['status'])) {
@@ -47,6 +46,7 @@ class TaskRepository implements TaskRepositoryInterface
     {
         $task = Task::findOrFail($id);
         $task->update($data);
+
         return $task;
     }
 
@@ -59,7 +59,8 @@ class TaskRepository implements TaskRepositoryInterface
     public function assignUser($taskId, $userId)
     {
         $task = Task::findOrFail($taskId);
-        $task->assignees()->syncWithoutDetaching([$userId]); // prevents duplicates
+        $task->assignees()->syncWithoutDetaching([$userId]);
+
         return $task->load('assignees');
     }
 

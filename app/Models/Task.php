@@ -13,13 +13,11 @@ class Task extends Model
         'user_id', 'title', 'description', 'due_date', 'status', 'priority',
     ];
 
-    // Creator of the task
     public function creator()
     {
         return $this->belongsTo(User::class, 'user_id');
     }
 
-    // Assigned users (for later many-to-many setup)
     public function assignees()
     {
         return $this->belongsToMany(User::class, 'task_user', 'task_id', 'user_id');

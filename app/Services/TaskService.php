@@ -38,8 +38,12 @@ class TaskService
         return $this->taskRepo->delete($id);
     }
 
-    public function assignUserToTask($taskId, $userId)
+    public function assignUserToTask($taskId, $userId, $currentUser)
     {
+        if (! $currentUser->isAdmin()) {
+            abort(403, 'Only admin can assign tasks.');
+        }
+
         return $this->taskRepo->assignUser($taskId, $userId);
     }
 

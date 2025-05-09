@@ -20,32 +20,37 @@ class TaskController extends Controller
     public function index(Request $request)
     {
         $tasks = $this->taskService->getAllTasks($request->all());
+
         return new TaskCollection($tasks);
     }
 
     public function store(TaskRequest $request)
     {
         $data = $request->validated();
-        $data['user_id'] = $request->user()->id; // Set creator
+        $data['user_id'] = $request->user()->id;
         $task = $this->taskService->createTask($data);
+
         return new TaskResource($task);
     }
 
     public function show($id)
     {
         $task = $this->taskService->getTask($id);
+
         return new TaskResource($task);
     }
 
     public function update(TaskRequest $request, $id)
     {
         $task = $this->taskService->updateTask($id, $request->validated());
+
         return new TaskResource($task);
     }
 
     public function destroy($id)
     {
         $this->taskService->deleteTask($id);
+
         return response()->json(['message' => 'Task deleted']);
     }
 
@@ -55,9 +60,15 @@ class TaskController extends Controller
             'user_id' => 'required|exists:users,id',
         ]);
 
-        $task = $this->taskService->assignUserToTask($id, $request->user_id);
+        $task = $this->taskService->assignUserToTask($id, $request->user_id, $request->user());
+        $assignedUser = $task->assignees->find($request->user_id);
 
-        return new TaskResource($task);
+        return response()->json([
+            'task_id'    => $task->id,
+            'task_title' => $task->title,
+            'user_id'    => $assignedUser->id,
+            'username'   => $assignedUser->name,
+        ]);
     }
 
 }

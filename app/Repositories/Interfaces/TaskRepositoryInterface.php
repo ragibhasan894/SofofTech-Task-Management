@@ -1,6 +1,5 @@
 <?php
 
-// app/Repositories/Interfaces/TaskRepositoryInterface.php
 namespace App\Repositories\Interfaces;
 
 interface TaskRepositoryInterface

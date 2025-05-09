@@ -42,6 +42,11 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin';
+    }
+
     public function createdTasks()
     {
         return $this->hasMany(Task::class);
@@ -51,5 +56,4 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Task::class, 'task_user', 'user_id', 'task_id');
     }
-
 }
